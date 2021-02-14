@@ -40,6 +40,10 @@ module.exports = {
       }
    },
    optimization: optimization(),
+   devServer: {
+      port: 3000,
+      contentBase: './build'
+   },
    devtool: 'source-map',
    plugins: [
       new HTMLWebpackPlugin({
@@ -57,11 +61,11 @@ module.exports = {
             }
          ]
       }),
-      new BrowserSyncPlugin({
-         host: 'localhost',
-         port: 3000,
-         server: { baseDir: ['build'] }
-      }),
+      // new BrowserSyncPlugin({
+      //    host: 'localhost',
+      //    port: 3000,
+      //    server: { baseDir: ['build'] }
+      // }),
       new MiniCssExtractPlugin({
          filename: '[name].css',
 

@@ -1,6 +1,6 @@
 import {SHIP_MOVE_SPD, SHIP_TURN_SPD, SHIP_RADIUS} from '../constants'
 
-export default class Spaceship {
+export default class SpaceShip {
    constructor(game) {
       this.gameWidth = game.width;
       this.gameHeight = game.height;
@@ -9,10 +9,15 @@ export default class Spaceship {
          x: game.width / 2,
          y: game.height / 2
       }
+      this.radius = SHIP_RADIUS
       this.angle = 90 / 180 * Math.PI
+      this.rotation = 0 // Rotation flag. left: 1, right: -1. No rotation - 0
       this.moveSpeed = SHIP_MOVE_SPD
       this.turnSpeed = SHIP_TURN_SPD
-      this.radius = SHIP_RADIUS
+   }
+
+   update(dt) {
+      this.rotate(dt)
    }
 
    draw(ctx) {
@@ -39,5 +44,9 @@ export default class Spaceship {
       // center dot
       ctx.fillStyle = 'red'
       ctx.fillRect(posX - 1, posY - 1, 2, 2)
+   }
+
+   rotate(dt) {
+      this.angle += this.rotation * this.turnSpeed / 180 * Math.PI
    }
 }

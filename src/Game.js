@@ -1,34 +1,34 @@
-import Spaceship from "./components/Spaceship";
+import SpaceShip from "./components/SpaceShip";
+import InputHandler from "./handlers/InputHandler";
 
 export default class Game {
-   constructor(canvas) {
-      this.container = document.getElementById('content');
+   constructor() {
 
-      this.width = 0;
+
       this.height = 0;
-
-      this.resize(canvas)
+      this.width = 0;
 
       this.init();
    }
 
    init() {
-      this.spaceship = new Spaceship(this);
+      this.spaceShip = new SpaceShip(this);
+      this.inputHandler = new InputHandler(this)
    }
 
    update(dt) {
-
+      this.spaceShip.update(dt)
    }
 
    draw(ctx) {
-      this.spaceship.draw(ctx)
+      this.spaceShip.draw(ctx)
    }
 
-   resize(canvas) {
-      this.width = this.container.clientWidth;
-      this.height = this.container.clientHeight;
-
-      canvas.width = this.width;
-      canvas.height = this.height;
-   }
+   // onResize() {
+   //    this.width = this.container.clientWidth;
+   //    this.height = this.container.clientHeight;
+   //
+   //    this.canvas.width = this.width;
+   //    this.canvas.height = this.height;
+   // }
 }
