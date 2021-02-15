@@ -2,14 +2,14 @@
   "name": "asteroids-game",
   "version": "1.0.0",
   "description": "Asteroids Atari game with JS",
-  "main": "index.js",
+  "main": "./src/index.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack --mode development",
     "build": "cross-env NODE_ENV=production webpack --mode production",
     "watch": "cross-env NODE_ENV=development webpack --mode development --watch",
     "start": "cross-env NODE_ENV=development webpack serve --open"
   },
-  "devUrl": "http://localhost:8080/",
+  "devUrl": "http://localhost:3000/",
   "watch": "build",
   "author": "Vitalii Shlomenko",
   "license": "ISC",

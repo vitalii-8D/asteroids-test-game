@@ -1,4 +1,4 @@
-import SpaceShip from "./components/SpaceShip";
+import SpaceShip from "./components/Spaceship";
 import InputHandler from "./handlers/InputHandler";
 
 export default class Game {

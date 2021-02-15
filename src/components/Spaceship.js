@@ -94,7 +94,7 @@ export default class SpaceShip {
       )
       ctx.lineTo( // left bottom
          posX - 6 / 3 * radius * Math.cos(angle),
-         posY + 6 / 3 * radius * Math.sin(angle)
+         posY - 6 / 3 * radius * Math.sin(angle)
       )
       ctx.lineTo( // right bottom
          posX - radius * (2 / 3 * Math.cos(angle) - Math.sin(angle)),
