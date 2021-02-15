@@ -9,6 +9,8 @@
     "watch": "cross-env NODE_ENV=development webpack --mode development --watch",
     "start": "cross-env NODE_ENV=development webpack serve --open"
   },
+  "devUrl": "http://localhost:8080/",
+  "watch": "build",
   "author": "Vitalii Shlomenko",
   "license": "ISC",
   "devDependencies": {

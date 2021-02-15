@@ -40,17 +40,18 @@ module.exports = {
       }
    },
    optimization: optimization(),
-   devServer: {
-      port: 3000,
-      contentBase: './build'
-   },
+   // devServer: {
+   //    port: 8080,
+   //    contentBase: './build'
+   // },
    devtool: 'source-map',
    plugins: [
       new HTMLWebpackPlugin({
          template: './static/index.html',
          minify: {
             collapseWhitespace: isProd
-         }
+         },
+         inject: 'body'
       }),
       new CleanWebpackPlugin(),
       new CopyWebpackPlugin({
@@ -61,11 +62,11 @@ module.exports = {
             }
          ]
       }),
-      // new BrowserSyncPlugin({
-      //    host: 'localhost',
-      //    port: 3000,
-      //    server: { baseDir: ['build'] }
-      // }),
+      new BrowserSyncPlugin({
+         host: 'localhost',
+         port: 8080,
+         server: { baseDir: ['build'] }
+      }),
       new MiniCssExtractPlugin({
          filename: '[name].css',
 

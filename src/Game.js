@@ -3,12 +3,8 @@ import InputHandler from "./handlers/InputHandler";
 
 export default class Game {
    constructor() {
-
-
       this.height = 0;
       this.width = 0;
-
-      this.init();
    }
 
    init() {
@@ -24,11 +20,11 @@ export default class Game {
       this.spaceShip.draw(ctx)
    }
 
-   // onResize() {
-   //    this.width = this.container.clientWidth;
-   //    this.height = this.container.clientHeight;
-   //
-   //    this.canvas.width = this.width;
-   //    this.canvas.height = this.height;
-   // }
+   onResize(canvas) {
+      this.width = window.innerWidth;
+      this.height = window.innerHeight;
+
+      canvas.width = this.width;
+      canvas.height = this.height;
+   }
 }

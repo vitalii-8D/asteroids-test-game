@@ -10,7 +10,7 @@ export default class InputHandler {
                break
             }
             case 38: { // Top
-
+               spaceShip.moving = true
                break
             }
             case 39: { // Right
@@ -27,7 +27,7 @@ export default class InputHandler {
                break
             }
             case 38: { // Top
-
+               spaceShip.moving = false
                break
             }
             case 39: { // Right
