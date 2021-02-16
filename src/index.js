@@ -1,5 +1,7 @@
 import Game from "./Game";
 
+import {BG_COLOR} from "./constants";
+
 import '@static/styles/main.css'
 
 class Engine {
@@ -7,6 +9,8 @@ class Engine {
       this.container = document.getElementById('content');
       this.canvas = document.getElementById('canvas');
       this.ctx = this.canvas.getContext('2d');
+
+      this.canvas.style.background = BG_COLOR
 
       this.prevUpdateTime = 0;
 
@@ -29,6 +33,7 @@ class Engine {
       const dt = timestamp - this.prevUpdateTime;
       this.prevUpdateTime = timestamp;
 
+      this.ctx.fillStyle = BG_COLOR
       this.ctx.clearRect(0, 0, this.game.width, this.game.height)
 
       this.game.update(dt)

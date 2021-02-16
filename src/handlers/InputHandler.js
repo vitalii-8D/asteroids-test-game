@@ -17,6 +17,10 @@ export default class InputHandler {
                spaceShip.rotation = -1
                break
             }
+            case 32: { // Space
+               spaceShip.shoot()
+               break
+            }
          }
       })
 
@@ -32,6 +36,10 @@ export default class InputHandler {
             }
             case 39: { // Right
                spaceShip.rotation = 0
+               break
+            }
+            case 32: { // Space
+
                break
             }
          }

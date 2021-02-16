@@ -35,6 +35,7 @@ module.exports = {
       path: path.resolve(__dirname, 'build'),
    },
    resolve: {
+      extensions: ['.js'],
       alias: {
          '@static': path.resolve(__dirname, 'static')
       }
