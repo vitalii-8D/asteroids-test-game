@@ -13,7 +13,7 @@ export const setHandler = (name, game) => {
       if (game.inputHandler) {
          game.inputHandler.removeListeners()
       }
-      console.log(game);
+
       return new Handler(game)
    }
 }

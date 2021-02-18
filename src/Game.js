@@ -31,6 +31,7 @@ export default class Game {
       this.score = 0;
 
       this.state = gameStates.GAME
+      this.gameOverSlideTimer = 0
    }
 
    init() {
@@ -54,12 +55,13 @@ export default class Game {
    update(dt) {
       if (this.state === gameStates.PAUSE) return;
 
-      this.spaceShip.update(dt)
       for (let i = 0; i < this.asteroids.length; i++) {
          this.asteroids[i].update(dt)
       }
-      this.checkCollisions(dt)
       this.calculateParticles(dt)
+      if (this.state === gameStates.GAME_OVER) return;
+      this.spaceShip.update(dt)
+      this.checkCollisions(dt)
    }
 
    draw(ctx) {
@@ -72,6 +74,9 @@ export default class Game {
       this.drawScore(ctx)
       if (this.state === gameStates.PAUSE) {
          this.drawPause(ctx)
+      }
+      if (this.state === gameStates.GAME_OVER) {
+         this.drawGameOver(ctx)
       }
    }
 
@@ -99,14 +104,22 @@ export default class Game {
       if (this.score > this.highScore) {
          this.highScore = this.score
       }
-      console.log(this.score + 'HI: ' + this.highScore)
 
       this.setParticles(this.asteroids[i].position.x, this.asteroids[i].position.y, this.asteroids[i].radius)
       this.asteroids.splice(i, 1)
    }
 
    checkCollisions(dt) {
-      if (this.spaceShip.isDead) return;
+      if (this.spaceShip.isDead) {
+         if (this.lives === 0) {
+            this.state = gameStates.GAME_OVER
+            if (this.score > this.highScore) {
+               window.localStorage.setItem('high-score', `${this.score}`)
+            }
+            // this.gameOverSlideTimer = 200
+         }
+         return
+      }
 
       for (let i = this.asteroids.length - 1; i >= 0; i--) {
          // check ship collision
@@ -209,7 +222,7 @@ export default class Game {
 
    drawPause(ctx) {
       ctx.fillStyle = '#000000'
-      ctx.globalAlpha = 0.8
+      ctx.globalAlpha = 0.7
       ctx.fillRect(0, 0, this.width, this.height)
       ctx.globalAlpha = 1
       ctx.fillStyle = 'white'
@@ -218,5 +231,17 @@ export default class Game {
       ctx.fillText('PAUSE', this.width / 2, this.height / 2 - this.height / 5)
    }
 
-
+   drawGameOver(ctx) {
+      ctx.fillStyle = '#000000'
+      ctx.globalAlpha = 0.7
+      ctx.fillRect(0, 0, this.width, this.height)
+      ctx.globalAlpha = 1
+      ctx.fillStyle = 'white'
+      ctx.textAlign = 'center'
+      ctx.font = 'small-caps ' + TEXT_SIZE * 2 + 'px dejavu sans mono';
+      ctx.fillText('GAME OVER', this.width / 2, this.height / 2 - this.height / 4)
+      ctx.font = 'small-caps ' + TEXT_SIZE + 'px dejavu sans mono';
+      ctx.fillText(`Your score: ${this.score}      HI score: ${this.highScore}`, this.width / 2, this.height / 2)
+      ctx.fillText(`Press SPACEBAR to another try`, this.width / 2, this.height - this.height / 3)
+   }
 }

@@ -3,7 +3,6 @@ import {gameStates} from "@constants/game-states";
 export default class GameHandler {
    constructor(game) {
       this.game = game
-      console.log(this.game);
 
       document.addEventListener('keydown', this.downListener)
       document.addEventListener('keyup', this.upListener)
@@ -24,10 +23,15 @@ export default class GameHandler {
             break
          }
          case 32: { // Space
-            if (this.game.spaceShip.canShoot) {
-               this.game.spaceShip.shoot()
-               this.game.spaceShip.canShoot = false
+            if (this.game.state === gameStates.GAME) {
+               if (this.game.spaceShip.canShoot) {
+                  this.game.spaceShip.shoot()
+                  this.game.spaceShip.canShoot = false
+               }
+            } else if (this.game.state === gameStates.GAME_OVER) {
+               this.game.state = gameStates.GAME
             }
+
             break
          }
          case 27: { // Esc
