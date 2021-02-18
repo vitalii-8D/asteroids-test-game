@@ -29,7 +29,7 @@ const optimization = () => {
 
 module.exports = {
    mode: 'development',
-   entry: './src/index.js',
+   entry: ['@babel/polyfill', './src/index.js'],
    output: {
       filename: '[name].js',
       path: path.resolve(__dirname, 'build'),
@@ -37,7 +37,11 @@ module.exports = {
    resolve: {
       extensions: ['.js'],
       alias: {
-         '@static': path.resolve(__dirname, 'static')
+         '@static': path.resolve(__dirname, 'static'),
+         '@components': path.resolve(__dirname, 'src', 'components'),
+         '@constants': path.resolve(__dirname, 'src', 'constants'),
+         '@handlers': path.resolve(__dirname, 'src', 'handlers'),
+         '@helpers': path.resolve(__dirname, 'src', 'helpers'),
       }
    },
    optimization: optimization(),
@@ -78,6 +82,17 @@ module.exports = {
          {
             test: /\.css$/,
             use: [MiniCssExtractPlugin.loader, 'css-loader']
+         },
+         {
+            test: /\.m?js$/,
+            exclude: /node_modules/,
+            use: {
+               loader: "babel-loader",
+               options: {
+                  presets: ['@babel/preset-env'],
+                  plugins: ['@babel/plugin-proposal-class-properties']
+               }
+            }
          }
       ]
    }

@@ -1,15 +1,23 @@
-import {SHIP_MOVE_SPD, SHIP_TURN_SPD, SHIP_RADIUS, SHIP_MOVE_MAX_SPD, FRICTION, MAX_LASERS_NUM, MAX_LASERS_RANGE, LASERS_SPEED} from '../constants'
-import {getDistance} from "../helpers";
+import {
+   SHIP_MOVE_SPD,
+   SHIP_TURN_SPD,
+   SHIP_RADIUS,
+   SHIP_MOVE_MAX_SPD,
+   FRICTION,
+   MAX_LASERS_NUM,
+   MAX_LASERS_RANGE,
+   LASERS_SPEED,
+   BLINK_DUR,
+   SHOW_CENTER_DOT
+} from '@constants/variables'
 
 export default class SpaceShip {
    constructor(game) {
       this.game = game
-      this.gameWidth = game.width
-      this.gameHeight = game.height
 
       this.position = {
-         x: this.gameWidth / 2,
-         y: this.gameHeight / 2
+         x: this.game.width / 2,
+         y: this.game.height / 2
       }
       this.radius = SHIP_RADIUS
       this.angle = 90 / 180 * Math.PI
@@ -17,20 +25,33 @@ export default class SpaceShip {
       this.moving = false // true - in motion
       this.speed = {x: 0, y: 0}
       this.lasers = []
+      this.canShoot = true
       this.isDead = false
+
       this.explodeTime = 0;
+      this.blinkNum = 0
+      this.blinkTime = 0
    }
 
    update(dt) {
-      this.rotate(dt)
-      this.moveShip(dt)
-      this.calcShooting(dt)
+      if (this.isDead) {
+         this.deathTimer()
+      } else {
+         this.rotate(dt)
+         this.moveShip(dt)
+         this.calcShooting(dt)
+         this.blinkingTimer(dt)
+      }
    }
 
    draw(ctx) {
-      this.drawTriangle(ctx)
-      this.drawFire(ctx)
-      this.drawLasers(ctx)
+      if (this.isDead) {
+         this.drawExplosion(ctx)
+      } else if (this.blinkNum % 2 === 0) {
+         this.drawTriangle(ctx)
+         this.drawFire(ctx)
+         this.drawLasers(ctx)
+      }
    }
 
    rotate(dt) {
@@ -48,7 +69,6 @@ export default class SpaceShip {
    }
 
    moveShip(dt) {
-      const fullSpeed = Math.sqrt(this.speed.x ** 2 + this.speed.y ** 2)
       if (this.moving) {
          this.accelerate(dt)
       } else {
@@ -61,19 +81,19 @@ export default class SpaceShip {
 
       // Handling edges
       if (this.position.x + this.radius < 0) {
-         this.position.x = this.gameWidth + this.radius
-      } else if (this.position.x - this.radius > this.gameWidth) {
+         this.position.x = this.game.width + this.radius
+      } else if (this.position.x - this.radius > this.game.width) {
          this.position.x = -this.radius
       }
       if (this.position.y + this.radius < 0) {
-         this.position.y = this.gameHeight + this.radius
-      } else if (this.position.y - this.radius > this.gameHeight) {
+         this.position.y = this.game.height + this.radius
+      } else if (this.position.y - this.radius > this.game.height) {
          this.position.y = -this.radius
       }
    }
 
-   drawTriangle(ctx) {
-      let {radius, position: {x: posX, y: posY}, angle} = this
+   drawTriangle(ctx, parameters) {
+      const {radius, position: {x: posX, y: posY}, angle} = parameters || this
       ctx.strokeStyle = 'white'
       ctx.lineWidth = this.radius / 10
       ctx.beginPath()
@@ -93,36 +113,37 @@ export default class SpaceShip {
       ctx.stroke();
 
       // center dot
-      ctx.fillStyle = 'red'
-      ctx.fillRect(posX - 1, posY - 1, 2, 2)
-   }
+      if (SHOW_CENTER_DOT) {
+         ctx.fillStyle = 'red'
+         ctx.fillRect(posX - 1, posY - 1, 2, 2)
+      }
+   } // drawTriangle(ctx)
 
    drawFire(ctx) {
       let {radius, position: {x: posX, y: posY}, angle} = this
       if (!this.moving) return;
       ctx.strokeStyle = 'red'
-      ctx.fillStyle= 'yellow'
+      ctx.fillStyle = 'yellow'
       ctx.lineWidth = this.radius / 5
       ctx.beginPath()
       ctx.moveTo( // nose
-         posX - radius * (2 / 3 * Math.cos(angle)*1.2 - 1 / 2 * Math.sin(angle)),
-         posY + radius * (2 / 3 * Math.sin(angle)*1.2 + 1 / 2 * Math.cos(angle))
+         posX - radius * (2 / 3 * Math.cos(angle) * 1.2 - 1 / 2 * Math.sin(angle)),
+         posY + radius * (2 / 3 * Math.sin(angle) * 1.2 + 1 / 2 * Math.cos(angle))
       )
       ctx.lineTo( // bottom
          posX - 6 / 3 * radius * Math.cos(angle),
          posY + 6 / 3 * radius * Math.sin(angle)
       )
       ctx.lineTo( // right bottom
-         posX - radius * (2 / 3 * Math.cos(angle)*1.2 + 1 / 2 * Math.sin(angle)),
-         posY + radius * (2 / 3 * Math.sin(angle)*1.2 - 1 / 2 * Math.cos(angle))
+         posX - radius * (2 / 3 * Math.cos(angle) * 1.2 + 1 / 2 * Math.sin(angle)),
+         posY + radius * (2 / 3 * Math.sin(angle) * 1.2 - 1 / 2 * Math.cos(angle))
       )
       ctx.closePath();
       ctx.fill();
       ctx.stroke();
-   }
+   } // drawFire(ctx)
 
    shoot() {
-      console.log('shoot');
       if (this.lasers.length < MAX_LASERS_NUM) {
          const laser = {
             x: this.position.x + 4 / 3 * this.radius * Math.cos(this.angle),
@@ -134,9 +155,10 @@ export default class SpaceShip {
          this.lasers.push(laser);
       }
    }
+
    calcShooting(dt) {
       for (let i = this.lasers.length - 1; i >= 0; i--) {
-         if (this.lasers[i].distance > MAX_LASERS_RANGE * this.gameWidth) {
+         if (this.lasers[i].distance > MAX_LASERS_RANGE * this.game.width) {
             this.lasers.splice(i, 1)
             continue
          }
@@ -157,9 +179,39 @@ export default class SpaceShip {
       }
    }
 
-   checkCollision() {
-      if (getDistance()) {
+   deathTimer() {
+      this.explodeTime--
+      if (this.explodeTime === 0) {
+         this.game.resetShip()
+      }
+   }
 
+   drawExplosion(ctx) {
+      ctx.fillStyle = 'yellow'
+      ctx.beginPath()
+      ctx.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI)
+      ctx.closePath()
+      ctx.fill()
+      ctx.fillStyle = 'orange'
+      ctx.beginPath()
+      ctx.arc(this.position.x, this.position.y, this.radius * 0.6, 0, 2 * Math.PI)
+      ctx.closePath()
+      ctx.fill()
+      ctx.fillStyle = 'red'
+      ctx.beginPath()
+      ctx.arc(this.position.x, this.position.y, this.radius * 0.3, 0, 2 * Math.PI)
+      ctx.closePath()
+      ctx.fill()
+   } // drawExplosion(ctx)
+
+   blinkingTimer(dt) {
+      if (this.blinkNum > 0) {
+         this.blinkTime--
+
+         if (this.blinkTime === 0) {
+            this.blinkNum--
+            this.blinkTime = Math.ceil(BLINK_DUR * 30);
+         }
       }
    }
 }

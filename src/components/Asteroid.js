@@ -1,17 +1,23 @@
-import {ROIDS_NUM, ROIDS_JAG, ROIDS_MAX_RADIUS, ROIDS_SPEED, ROIDS_VERT} from "../constants";
+import {
+   ROIDS_JAG,
+   ROIDS_MAX_RADIUS,
+   ROIDS_SPEED,
+   ROIDS_VERT,
+   ROID_PTS_LGE,
+   ROID_PTS_MED,
+   ROID_PTS_SML} from "@constants/variables";
 
 export default class Asteroid {
-   constructor(game, radius = 0) {
-      this.gameWidth = game.width
-      this.gameHeight = game.height
+   constructor(game, radius = 0, position) {
+      this.game = game
 
       this.radius = radius
-      this.position = {x: 0, y: 0}
-      this.speed = {x: 0, y: 0}
+      this.position = position
+      this.speed = {}
 
       this.vert = 0
       this.jags = []
-      this.isSmallAsteroid = false
+      this.points = 0
 
       this.init()
    }
@@ -25,12 +31,23 @@ export default class Asteroid {
             this.radius = ROIDS_MAX_RADIUS / 2
          } else {
             this.radius = ROIDS_MAX_RADIUS / 4
-            this.isSmallAsteroid = true
          }
       }
 
-      this.position.x = Math.random() * 2 * this.gameWidth - this.gameWidth / 2
-      this.position.y = Math.random() * 2 * this.gameHeight - this.gameHeight / 2
+      if (this.radius === ROIDS_MAX_RADIUS / 4) {
+         this.points = ROID_PTS_SML
+      } else if (this.radius === ROIDS_MAX_RADIUS / 2) {
+         this.points = ROID_PTS_MED
+      } else {
+         this.points = ROID_PTS_LGE
+      }
+
+      if (!this.position) {
+         this.position = {
+            x: Math.random() * 2 * this.game.width - this.game.width / 2,
+            y: Math.random() * 2 * this.game.height - this.game.height / 2
+         }
+      }
 
       this.speed.x = (Math.random() * 2 - 1) * ROIDS_SPEED
       this.speed.y = (Math.random() * 2 - 1) * ROIDS_SPEED
@@ -48,20 +65,20 @@ export default class Asteroid {
 
       // Handling edges
       if (this.position.x + this.radius < 0) {
-         this.position.x = this.gameWidth + this.radius
-      } else if (this.position.x - this.radius > this.gameWidth) {
+         this.position.x = this.game.width + this.radius
+      } else if (this.position.x - this.radius > this.game.width) {
          this.position.x = -this.radius
       }
       if (this.position.y + this.radius < 0) {
-         this.position.y = this.gameHeight + this.radius
-      } else if (this.position.y - this.radius > this.gameHeight) {
+         this.position.y = this.game.height + this.radius
+      } else if (this.position.y - this.radius > this.game.height) {
          this.position.y = -this.radius
       }
    }
 
    draw(ctx) {
       ctx.strokeStyle = '#eeeeee'
-      ctx.lineWidth = ROIDS_MAX_RADIUS / 20
+      ctx.lineWidth = ROIDS_MAX_RADIUS / 25
       ctx.beginPath()
       ctx.moveTo(this.position.x + this.radius * this.jags[0], this.position.y)
       for (let i = 1; i < this.vert; i++) {
