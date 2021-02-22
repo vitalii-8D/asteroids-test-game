@@ -15,7 +15,9 @@ export default class GameHandler {
             break
          }
          case 38: { // Top
-            this.game.spaceShip.moving = true
+            if (this.game.state === gameStates.GAME) {
+               this.game.spaceShip.moving = true
+            }
             break
          }
          case 39: { // Right
@@ -28,16 +30,23 @@ export default class GameHandler {
                   this.game.spaceShip.shoot()
                   this.game.spaceShip.canShoot = false
                }
-            } else if (this.game.state === gameStates.GAME_OVER) {
+            } else if (this.game.state === gameStates.START_MENU) {
+               this.game.newTry()
                this.game.state = gameStates.GAME
             }
-
             break
          }
          case 27: { // Esc
             if (this.game.state === gameStates.GAME) {
                this.game.state = gameStates.PAUSE
             } else {
+               this.game.state = gameStates.GAME
+            }
+            break
+         }
+         case 13: { // Enter
+            if (this.game.state === gameStates.GAME_OVER) {
+               this.game.newTry()
                this.game.state = gameStates.GAME
             }
             break

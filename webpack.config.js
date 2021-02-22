@@ -6,13 +6,12 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
 
 const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin')
-// const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const TerserWebpackPlugin = require('terser-webpack-plugin')
 
-const isDev = process.env.NODE_ENV === 'development';
 const isProd = process.env.NODE_ENV === 'production';
 
 const optimization = () => {
+   // Minimize JS and CSS in production mode
    let config = {
       minimize: isProd
    }
@@ -51,8 +50,8 @@ module.exports = {
    },
    devtool: 'source-map',
    plugins: [
-      new CleanWebpackPlugin(),
-      new CopyWebpackPlugin({
+      new CleanWebpackPlugin(), // Deletes build folder before next build
+      new CopyWebpackPlugin({ // Copies files (icons in this case)
          patterns: [
             {
                from: path.resolve(__dirname, 'static/asteroid.ico'),
@@ -60,16 +59,15 @@ module.exports = {
             }
          ]
       }),
-      new MiniCssExtractPlugin({
+      new MiniCssExtractPlugin({ // Pastes CSS in different file
          filename: '[name].css',
-
       }),
-      new HTMLWebpackPlugin({
+      new HTMLWebpackPlugin({ // Copies HTML template from 'static' folder
          template: './static/index.html',
          minify: {
             collapseWhitespace: isProd
          },
-         inject: 'body'
+         inject: 'body' // Injects <script/> tag in body tag
       }),
       // new BrowserSyncPlugin({
       //    host: 'localhost',
@@ -83,7 +81,7 @@ module.exports = {
             test: /\.css$/,
             use: [MiniCssExtractPlugin.loader, 'css-loader']
          },
-         {
+         {  // Babel for compiling to previous standard
             test: /\.m?js$/,
             exclude: /node_modules/,
             use: {

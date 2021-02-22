@@ -5,7 +5,8 @@ import {
    ROIDS_VERT,
    ROID_PTS_LGE,
    ROID_PTS_MED,
-   ROID_PTS_SML} from "@constants/variables";
+   ROID_PTS_SML, SPEED_DIFFICULTY
+} from "@constants/variables";
 
 export default class Asteroid {
    constructor(game, radius = 0, position) {
@@ -43,14 +44,19 @@ export default class Asteroid {
       }
 
       if (!this.position) {
-         this.position = {
-            x: Math.random() * 2 * this.game.width - this.game.width / 2,
-            y: Math.random() * 2 * this.game.height - this.game.height / 2
+         this.position = {}
+         if (Math.random() <= 0.5) {
+            Math.random() <= 0.5 ? this.position.x = -this.radius : this.position.x = this.game.width + this.radius;
+            this.position.y = Math.random() * this.game.height;
+         } else {
+            this.position.x = Math.random() * this.game.width;
+            Math.random() <= 0.5 ? this.position.y = -this.radius : this.position.y = this.game.height + this.radius;
          }
+
       }
 
-      this.speed.x = (Math.random() * 2 - 1) * ROIDS_SPEED
-      this.speed.y = (Math.random() * 2 - 1) * ROIDS_SPEED
+      this.speed.x = (Math.random() * 2 - 1) * ROIDS_SPEED + this.game.level * 0.01 * ROIDS_SPEED * SPEED_DIFFICULTY;
+      this.speed.y = (Math.random() * 2 - 1) * ROIDS_SPEED + this.game.level * 0.01 * ROIDS_SPEED * SPEED_DIFFICULTY;
 
       this.vert = Math.floor(Math.random() * (ROIDS_VERT + 1) + ROIDS_VERT / 2)
 
