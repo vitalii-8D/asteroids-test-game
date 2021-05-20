@@ -9,11 +9,22 @@ const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plug
 const TerserWebpackPlugin = require('terser-webpack-plugin')
 
 const isProd = process.env.NODE_ENV === 'production';
+console.log(path.resolve(__dirname, 'build'));
 
 const optimization = () => {
    // Minimize JS and CSS in production mode
    let config = {
       minimize: isProd
+      // splitChunks: {
+      //    cacheGroups: {
+      //       commons: {
+      //          test: /[\\/]node_modules[\\/]/,
+      //          name: 'vendors',
+      //          chunks: 'all',
+      //          filename: '[name].bundle.js'
+      //       }
+      //    }
+      // }
    }
 
    if (isProd) {
@@ -27,11 +38,13 @@ const optimization = () => {
 }
 
 module.exports = {
-   mode: 'development',
    entry: ['@babel/polyfill', './src/index.js'],
+   target: 'web',
    output: {
-      filename: '[name].js',
+      filename: '[name].bundle.js',
+      chunkFilename: '[name].chunk.js',
       path: path.resolve(__dirname, 'build'),
+      publicPath: "/"
    },
    resolve: {
       extensions: ['.js'],
@@ -44,11 +57,16 @@ module.exports = {
       }
    },
    optimization: optimization(),
-   devServer: {
-      port: 3000,
-      contentBase: path.join(__dirname, 'build')
-   },
+   mode: 'development',
    devtool: 'source-map',
+   devServer: {
+      // open: true,
+      port: 8080,
+      // liveReload: true,
+      // contentBase: 'build'
+      // contentBase: path.join(__dirname, 'src'),
+      // watchContentBase: true
+   },
    plugins: [
       new CleanWebpackPlugin(), // Deletes build folder before next build
       new CopyWebpackPlugin({ // Copies files (icons in this case)

@@ -36,12 +36,14 @@ export default class SpaceShip {
    update(dt) {
       if (this.isDead) {
          this.deathTimer()
-      } else {
-         this.rotate(dt)
-         this.moveShip(dt)
-         this.calcShooting(dt)
-         this.blinkingTimer(dt)
+         return false
       }
+
+      this.rotate(dt)
+      this.moveShip(dt)
+      this.calcShooting(dt)
+      this.blinkingTimer(dt)
+
    }
 
    draw(ctx) {

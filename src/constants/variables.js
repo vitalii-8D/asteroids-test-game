@@ -13,7 +13,7 @@ export const MAX_LIVES = 3 // Max count of life
 export const TEXT_SIZE = 26 // Size of main text
 
 export const PARTICLES_COUNT = 20 // Amount of particles after asteroid collisions
-export const PARTICLES_LIFETIME = 8 // How long could they fly
+export const PARTICLES_LIFETIME = 18 // How long could they fly
 export const MAX_PARTICLES_SIZE = 10 // Size of the biggest particle
 
 export const LASERS_SPEED = 300 // You know what it is
